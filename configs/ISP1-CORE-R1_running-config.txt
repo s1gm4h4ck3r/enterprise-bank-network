@@ -1,0 +1,107 @@
+!
+version 12.2
+no service timestamps log datetime msec
+no service timestamps debug datetime msec
+no service password-encryption
+!
+hostname ISP1-CORE-R1
+!
+!
+!
+!
+!
+!
+!
+!
+no ip cef
+no ipv6 cef
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet0/0
+ no ip address
+ duplex auto
+ speed auto
+ shutdown
+!
+interface GigabitEthernet1/0
+ no ip address
+ duplex auto
+ speed auto
+ shutdown
+!
+interface Serial2/0
+ no ip address
+ clock rate 2000000
+ shutdown
+!
+interface GigabitEthernet3/0
+ ip address 20.20.20.9 255.255.255.252
+!
+interface GigabitEthernet4/0
+ ip address 20.20.20.2 255.255.255.252
+!
+interface GigabitEthernet5/0
+ ip address 20.20.20.5 255.255.255.252
+!
+interface GigabitEthernet6/0
+ ip address 20.20.20.13 255.255.255.252
+!
+interface GigabitEthernet7/0
+ no ip address
+ shutdown
+!
+interface Serial8/0
+ no ip address
+ clock rate 2000000
+ shutdown
+!
+router bgp 100
+ bgp router-id 20.20.20.9
+ bgp log-neighbor-changes
+ no synchronization
+ neighbor 20.20.20.14 remote-as 64500
+ neighbor 20.20.20.10 remote-as 64500
+ neighbor 20.20.20.1 remote-as 200
+ network 20.20.20.12 mask 255.255.255.252
+ network 20.20.20.8 mask 255.255.255.252
+!
+ip classless
+ip route 0.0.0.0 0.0.0.0 20.20.20.17 10
+ip route 0.0.0.0 0.0.0.0 20.20.20.1 
+!
+ip flow-export version 9
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+!
+line aux 0
+!
+line vty 0 4
+ login
+!
+!
+!
+end
+

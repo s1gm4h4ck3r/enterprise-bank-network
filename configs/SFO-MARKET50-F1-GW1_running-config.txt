@@ -1,0 +1,134 @@
+!
+version 15.1
+no service timestamps log datetime msec
+no service timestamps debug datetime msec
+no service password-encryption
+!
+hostname SFO-MARKET50-F1-GW1
+!
+!
+!
+!
+!
+!
+!
+!
+no ip cef
+no ipv6 cef
+!
+!
+!
+!
+license udi pid CISCO2911/K9 sn FTX1524EA01-
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+spanning-tree mode pvst
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet0/0
+ no ip address
+ duplex auto
+ speed auto
+ shutdown
+!
+interface GigabitEthernet0/1
+ no ip address
+ duplex auto
+ speed auto
+ shutdown
+!
+interface GigabitEthernet0/2
+ no ip address
+ duplex auto
+ speed auto
+ shutdown
+!
+interface GigabitEthernet0/0/0
+ ip address 20.20.20.18 255.255.255.252
+!
+interface GigabitEthernet0/1/0
+ ip address 20.20.20.10 255.255.255.252
+ ip access-group R2_INTERNET_PROTECT in
+ ip nat outside
+!
+interface GigabitEthernet0/2/0
+ ip address 10.255.255.5 255.255.255.252
+ ip nat inside
+!
+interface GigabitEthernet0/3/0
+ ip address 10.255.255.2 255.255.255.252
+ ip nat inside
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+router ospf 1
+ log-adjacency-changes
+ network 10.255.255.0 0.0.0.3 area 0
+ network 10.255.255.4 0.0.0.3 area 0
+ default-information originate
+!
+router bgp 64500
+ bgp router-id 1.1.1.5
+ bgp log-neighbor-changes
+ no synchronization
+ neighbor 20.20.20.17 remote-as 200
+ neighbor 20.20.20.9 remote-as 100
+ network 20.20.20.8 mask 255.255.255.252
+!
+ip nat inside source list 1 interface GigabitEthernet0/1/0 overload
+ip classless
+ip route 0.0.0.0 0.0.0.0 20.20.20.9 
+!
+ip flow-export version 9
+!
+!
+access-list 1 permit 192.168.0.0 0.0.255.255
+access-list 1 permit 172.16.0.0 0.0.255.255
+access-list 1 permit 1.1.1.0 0.0.0.255
+access-list 1 permit 10.255.255.0 0.0.0.255
+ip access-list extended R2_INTERNET_PROTECT
+ permit ospf any any
+ permit ip any host 224.0.0.5
+ permit ip any host 224.0.0.6
+ permit tcp any host 20.20.20.10 eq 179
+ permit icmp any any echo-reply
+ permit tcp host 20.20.20.9 eq 179 any
+ permit tcp any 10.0.0.0 0.255.255.255 established
+ permit tcp any 192.168.0.0 0.0.255.255 established
+ permit tcp any 10.255.255.0 0.0.0.255 established
+ permit tcp any 1.1.1.0 0.0.0.255 established
+ deny ip any 10.0.0.0 0.255.255.255
+ deny ip any 192.168.0.0 0.0.255.255
+ deny ip any 1.1.1.0 0.0.0.255
+ permit ip any any
+!
+!
+!
+!
+!
+line con 0
+!
+line aux 0
+!
+line vty 0 4
+ login
+!
+!
+!
+end
+
